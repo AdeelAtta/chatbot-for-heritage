@@ -1,0 +1,291 @@
+1. Project Overview
+
+The Mohenjo-daro AI Chatbot & Image Generation System is an interactive, AI-powered web application designed to educate users about the ancient archaeological site of Mohenjo-daro. The platform will provide intelligent, context-aware responses to user queries regarding the site's history, architecture, culture, and significance. Furthermore, the system will dynamically generate AI-created images based on the chatbot's responses to enhance digital storytelling and user engagement.
+
+The primary objective of this project is to demonstrate the efficacy of Generative AI in cultural heritage preservation, tourism, education, and interactive storytelling.
+
+
+
+
+2. Project Scope
+
+The application will exclusively focus on the heritage site of Mohenjo-daro. The development team is responsible for curating reliable historical and cultural information from trusted sources to build a robust knowledge base that will power the chatbot's retrieval-augmented generation (RAG) pipeline.
+
+
+
+
+3. Functional Requirements
+
+3.1 Knowledge Base Development
+
+The system must include a structured, highly accurate knowledge base containing information on:
+
+•
+Historical background of the Indus Valley Civilization
+
+•
+Geographic location and discovery
+
+•
+Architecture and city planning
+
+•
+Drainage and urban systems
+
+•
+Cultural and historical significance
+
+•
+Important structures and landmarks
+
+•
+Archaeological findings and artifacts
+
+•
+Preservation challenges and environmental threats
+
+•
+Tourism and visitor information
+
+•
+Interesting historical facts
+
+All information must be sourced from authentic and reliable archaeological and historical records.
+
+3.2 AI Chatbot
+
+The application must feature an interactive chatbot interface allowing users to:
+
+•
+Ask natural language questions.
+
+•
+Receive AI-generated answers grounded in the Mohenjo-daro knowledge base.
+
+•
+Engage in conversational, multi-turn interactions.
+
+Example Questions:
+
+•
+"Who built Mohenjo-daro?"
+
+•
+"Why is Mohenjo-daro historically important?"
+
+•
+"What was the drainage system like?"
+
+•
+"What did the city look like in ancient times?"
+
+•
+"Why is the site at risk today?"
+
+3.3 AI Image Generation
+
+The system must generate contextual images based on the chatbot's responses to visually enrich the user experience.
+
+Example Workflow:
+
+•
+User: "Show me what Mohenjo-daro may have looked like thousands of years ago."
+
+•
+System Action: Generates a descriptive textual response detailing the ancient city's appearance.
+
+•
+System Action: Produces an AI-generated image representing ancient Mohenjo-daro based on the textual description.
+
+•
+Constraint: Generated visuals must align with historical themes and the chatbot's response.
+
+3.4 User Interface
+
+A simple, intuitive, and user-friendly interface must be provided, allowing users to:
+
+•
+Enter questions via a text input field.
+
+•
+View chatbot responses in a chat-like format.
+
+•
+Display generated images alongside or within the chat flow.
+
+
+
+
+4. Technical Requirements & Architecture Choice
+
+To ensure the application is easy to build, deploy, and maintain while delivering professional quality, the following technology stack and architecture are recommended.
+
+4.1 Recommended Technology Stack
+
+Component
+Recommended Technology
+Justification
+Frontend / UI
+Streamlit
+Streamlit is highly recommended for AI demo applications. It allows rapid development of interactive web apps using pure Python, eliminating the need for complex frontend frameworks like React or Next.js for this specific use case. It has built-in chat UI components (st.chat_message, st.chat_input) which make building chatbots trivial.
+Backend
+Python 3.11+
+Python is the industry standard for AI/ML integration. It seamlessly connects with Streamlit, LangChain, and Hugging Face APIs.
+AI Framework
+LangChain
+LangChain provides robust tools for building Retrieval-Augmented Generation (RAG) pipelines, managing conversation memory, and chaining LLM calls with image generation prompts.
+Vector Database
+ChromaDB or FAISS
+For the knowledge base, a lightweight, local vector database like ChromaDB or FAISS is ideal. They do not require separate server hosting and run perfectly within a Streamlit environment.
+LLM (Text Generation)
+Mistral-7B-Instruct or Llama-3-8B-Instruct (via Hugging Face API)
+These open-weight models offer excellent instruction-following capabilities and reasoning, making them perfect for RAG applications. They are accessible via the Hugging Face Inference API.
+Image Generation
+FLUX.1-dev or Stable Diffusion XL (SDXL) (via Hugging Face API)
+FLUX.1-dev is currently state-of-the-art for prompt adherence and photorealism. SDXL is a strong, fast alternative. Both are accessible via Hugging Face.
+
+
+
+
+4.2 System Architecture & Workflow
+
+The system will utilize a Retrieval-Augmented Generation (RAG) architecture combined with a conditional image generation pipeline.
+
+1.
+Data Ingestion (Offline):
+
+•
+Historical texts and data about Mohenjo-daro are processed.
+
+•
+Text is split into chunks using LangChain.
+
+•
+Embeddings are generated (e.g., using sentence-transformers/all-MiniLM-L6-v2) and stored in a local Vector DB (ChromaDB).
+
+
+
+2.
+Chatbot Flow (Online):
+
+•
+User Input: The user enters a question in the Streamlit UI.
+
+•
+Retrieval: The system queries the Vector DB to find the most relevant historical context chunks.
+
+•
+Text Generation: The retrieved context and the user's question are sent to the LLM (e.g., Mistral) via the Hugging Face API to generate a historically accurate response.
+
+•
+Intent Classification / Prompt Generation: The system evaluates if the user's query warrants an image (e.g., "show me", "what did it look like"). If yes, the LLM generates a concise image generation prompt based on its text response.
+
+•
+Image Generation: The image prompt is sent to the Image Generation Model (e.g., FLUX.1-dev) via the Hugging Face API.
+
+•
+Display: The Streamlit UI renders the text response and the generated image to the user.
+
+
+
+4.3 Hugging Face API Integration Notes
+
+The project will heavily rely on the Hugging Face Inference API to utilize models without requiring expensive local GPU hardware.
+
+•
+Free Tier: The free tier is suitable for academic and demo projects. However, it is subject to rate limits.
+
+•
+Implementation: Use the huggingface_hub Python library (InferenceClient) for seamless integration.
+
+•
+Handling Limits: Implement basic retry logic or error handling in the Streamlit app to gracefully manage API timeouts or rate limit errors (e.g., displaying a friendly "Please wait a moment" message).
+
+
+
+
+5. Deployment Strategy
+
+To make the application "live easily," the following deployment strategy is recommended:
+
+Platform: Streamlit Community Cloud
+
+•
+Why: It is completely free, directly integrates with GitHub, and is specifically designed for hosting Streamlit applications.
+
+•
+Process:
+
+1.
+Push the project code (Python scripts, requirements.txt, and the local ChromaDB database files) to a public or private GitHub repository.
+
+2.
+Log in to Streamlit Community Cloud and connect the GitHub account.
+
+3.
+Select the repository and the main application file (e.g., app.py).
+
+4.
+Add the Hugging Face API token (HF_TOKEN) to the Streamlit Cloud Secrets management settings to keep it secure.
+
+5.
+Click "Deploy." The app will be live on a public URL within minutes.
+
+
+
+
+
+
+6. Expected Deliverables
+
+1.
+Working Demo: A fully functional web application accessible via a public URL (e.g., hosted on Streamlit Cloud).
+
+2.
+Source Code: A well-documented GitHub repository containing:
+
+•
+app.py (Main Streamlit application)
+
+•
+ingest.py (Script used to build the knowledge base)
+
+•
+requirements.txt (Dependencies)
+
+•
+The pre-built local vector database directory.
+
+
+
+3.
+Presentation: Final slides and a live demonstration setup.
+
+4.
+Sample Outputs: Documentation of at least five diverse chatbot interactions and three corresponding AI-generated images.
+
+5.
+Documentation: A README.md file detailing data sources, architecture, setup instructions, and API integration details.
+
+
+
+
+7. Evaluation Criteria
+
+The final product will be evaluated against the following metrics:
+
+•
+Accuracy: Historical correctness of the chatbot's responses based on the provided knowledge base.
+
+•
+Relevance: How well the chatbot directly answers the user's specific questions.
+
+•
+Visual Quality: The creativity, historical alignment, and visual fidelity of the generated images.
+
+•
+User Experience: The smoothness, responsiveness, and intuitiveness of the Streamlit interface.
+
+•
+Technical Execution: Effective implementation of the RAG pipeline and reliable integration with Hugging Face APIs.
+
