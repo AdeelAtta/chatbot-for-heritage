@@ -76,7 +76,24 @@ def get_collection():
     return collection
 
 hf_token = os.environ.get("HF_TOKEN", "")
-llm_client = InferenceClient(provider="auto", token=hf_token)
+
+def get_llm_client():
+    if not hf_token:
+        print("WARNING: HF_TOKEN not set")
+    return InferenceClient(provider="auto", token=hf_token)
+
+@app.on_event("startup")
+async def startup_event():
+    print("Starting Mohenjo-daro API...")
+    print(f"ChromaDB path: {CHROMA_DIR}")
+    print(f"Embedding model: {EMBEDDING_MODEL}")
+    try:
+        coll = get_collection()
+        count = coll.count()
+        print(f"Collection loaded: {count} documents")
+    except Exception as e:
+        print(f"Warning: Could not load collection: {e}")
+    print("Startup complete")
 
 
 class ChatRequest(BaseModel):
@@ -122,6 +139,7 @@ async def chat_stream(request: ChatRequest):
 
     async def stream_response() -> AsyncIterator[str]:
         try:
+            llm_client = get_llm_client()
             response = llm_client.chat.completions.create(
                 model="deepseek-ai/DeepSeek-V3-0324",
                 messages=messages,
@@ -162,6 +180,7 @@ class ImageResponse(BaseModel):
 @app.post("/image", response_model=ImageResponse)
 async def generate_image_endpoint(request: ImageRequest):
     try:
+        llm_client = get_llm_client()
         prompt_messages = [
             {"role": "system", "content": "Create a detailed prompt for generating a historically accurate image of Mohenjo-daro. Keep it under 150 characters, focusing on key visual elements."},
             {"role": "user", "content": f"Create an image prompt based on:\n{request.prompt[:300]}"}
