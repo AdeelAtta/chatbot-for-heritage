@@ -16,12 +16,14 @@ EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 
 def load_documents():
     documents = []
+    count = 0
     for file_path in DATA_DIR.glob("*.txt"):
-        if file_path.name == "resources.txt":
+        if file_path.name == "resources.txt" or count >= 2:
             continue
         print(f"Loading {file_path.name}...")
         loader = TextLoader(str(file_path))
         docs = loader.load()
+        count += 1
         for doc in docs:
             doc.metadata["category"] = file_path.stem
             doc.metadata["source"] = file_path.name
