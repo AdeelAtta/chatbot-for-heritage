@@ -271,7 +271,7 @@ export default function ChatInterface() {
           </div>
         ))}
 
-        {isLoading && (
+        {/* {isLoading && (
           <div className="flex justify-start">
             <div className="bg-white border border-sand-200 rounded-2xl px-5 py-4 shadow-sm">
               <div className="flex items-center gap-3">
@@ -284,7 +284,7 @@ export default function ChatInterface() {
               </div>
             </div>
           </div>
-        )}
+        )} */}
 
         <div ref={messagesEndRef} />
       </div>
@@ -313,7 +313,7 @@ export default function ChatInterface() {
             <button
               type="submit"
               disabled={isLoading || !input.trim()}
-              className="p-3 bg-primary-600 hover:bg-primary-700 disabled:bg-sand-200 disabled:cursor-not-allowed text-white rounded-xl transition-all duration-200 shadow-sm"
+              className="mb-2 p-3 bg-primary-600 hover:bg-primary-700 disabled:bg-sand-200 disabled:cursor-not-allowed text-white rounded-xl transition-all duration-200 shadow-sm"
             >
               {isLoading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
