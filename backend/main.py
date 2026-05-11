@@ -48,13 +48,32 @@ IMAGE_KEYWORDS = [
     "depict", "illustrate", "generate image", "create image"
 ]
 
-embeddings = HuggingFaceEmbeddings(
-    model_name=EMBEDDING_MODEL,
-    model_kwargs={"device": "cpu"},
-    encode_kwargs={"normalize_embeddings": True},
-)
-chroma_client = chromadb.PersistentClient(path=CHROMA_DIR)
-collection = chroma_client.get_collection(name=COLLECTION_NAME)
+embeddings = None
+chroma_client = None
+collection = None
+
+def get_embeddings():
+    global embeddings
+    if embeddings is None:
+        embeddings = HuggingFaceEmbeddings(
+            model_name=EMBEDDING_MODEL,
+            model_kwargs={"device": "cpu"},
+            encode_kwargs={"normalize_embeddings": True},
+        )
+    return embeddings
+
+def get_collection():
+    global chroma_client, collection
+    if collection is None:
+        chroma_client = chromadb.PersistentClient(
+            path=CHROMA_DIR,
+            settings=Settings(
+                anonymized_telemetry=False,
+                allow_reset=True,
+            )
+        )
+        collection = chroma_client.get_collection(name=COLLECTION_NAME)
+    return collection
 
 hf_token = os.environ.get("HF_TOKEN", "")
 llm_client = InferenceClient(provider="auto", token=hf_token)
@@ -78,10 +97,10 @@ async def root():
 async def chat_stream(request: ChatRequest):
     query = request.message
 
-    query_embedding = embeddings.embed_query(query)
-    results = collection.query(
+    query_embedding = get_embeddings().embed_query(query)
+    results = get_collection().query(
         query_embeddings=[query_embedding],
-        n_results=5
+        n_results=3
     )
 
     contexts = []
