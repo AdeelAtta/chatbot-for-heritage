@@ -277,7 +277,7 @@ def handle_user_input(user_input: str):
         context = retrieve_context(user_input)
         
         if not context:
-            response = "I apologize, but I'm having trouble accessing the knowledge base. Please ensure the knowledge base has been loaded."
+            response = "I apologize, but I don't have information about that topic. My knowledge is limited to Mohenjo-daro and the Indus Valley Civilization. Please ask me questions about the heritage site, its history, architecture, artifacts, or related topics."
             image = None
         else:
             response = generate_response(user_input, context)
