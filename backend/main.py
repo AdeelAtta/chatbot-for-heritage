@@ -7,6 +7,7 @@ RAG-powered API for chat and image generation.
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from typing import Optional, List, AsyncIterator
 import os
@@ -28,6 +29,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+os.makedirs("static", exist_ok=True)
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 CHROMA_DIR = "chroma_db"
 COLLECTION_NAME = "mohenjo_daro_kb"
@@ -128,33 +132,45 @@ async def chat_stream(request: ChatRequest):
     )
 
 
-async def generate_image(text_response: str) -> Optional[str]:
+class ImageRequest(BaseModel):
+    prompt: str
+
+
+class ImageResponse(BaseModel):
+    image_base64: Optional[str] = None
+
+
+@app.post("/image", response_model=ImageResponse)
+async def generate_image_endpoint(request: ImageRequest):
     try:
         prompt_messages = [
-            {"role": "system", "content": "You are an expert at creating image generation prompts. Based on the text description, create a detailed prompt for generating a historically accurate image of Mohenjo-daro. Keep the prompt under 200 characters."},
-            {"role": "user", "content": f"Create an image prompt:\n{text_response[:500]}"}
+            {"role": "system", "content": "Create a detailed prompt for generating a historically accurate image of Mohenjo-daro. Keep it under 150 characters, focusing on key visual elements."},
+            {"role": "user", "content": f"Create an image prompt based on:\n{request.prompt[:300]}"}
         ]
-        
+
         prompt_response = llm_client.chat.completions.create(
-            model="mistralai/Mistral-7B-Instruct-v0.3",
+            model="deepseek-ai/DeepSeek-V3-0324",
             messages=prompt_messages,
-            max_tokens=100,
+            max_tokens=80,
         )
         prompt = prompt_response.choices[0].message.content.strip()
-        prompt = f"Historical illustration of ancient Mohenjo-daro, {prompt}, archaeological accuracy, detailed, realistic"
-        
+        prompt = f"Ancient Mohenjo-daro ruins, archaeological site, {prompt}, historical accuracy, detailed, realistic, warm lighting"
+
         image = llm_client.text_to_image(
-            prompt=prompt[:500],
+            prompt=prompt[:300],
             model="stabilityai/stable-diffusion-xl-base-1.0",
-            negative_prompt="modern, buildings, people, text, watermark",
+            negative_prompt="modern, buildings, people, text, watermark, blurry",
         )
-        
-        image_path = "static/generated_image.png"
-        image.save(image_path)
-        return f"/{image_path}"
+
+        import base64
+        from io import BytesIO
+        buffered = BytesIO()
+        image.save(buffered, format="PNG")
+        img_str = base64.b64encode(buffered.getvalue()).decode()
+        return ImageResponse(image_base64=f"data:image/png;base64,{img_str}")
     except Exception as e:
         print(f"Image generation error: {e}")
-        return None
+        return ImageResponse(image_base64=None)
 
 
 if __name__ == "__main__":

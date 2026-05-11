@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { SendHorizonal, RefreshCw, Loader2 } from "lucide-react";
+import { SendHorizonal, RefreshCw, Loader2, ImageIcon } from "lucide-react";
 import clsx from "clsx";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -10,7 +10,7 @@ interface Message {
   id: string;
   role: "user" | "assistant";
   content: string;
-  imageUrl?: string;
+  imageBase64?: string;
   isStreaming?: boolean;
 }
 
@@ -18,6 +18,7 @@ export default function ChatInterface() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [generateImageEnabled, setGenerateImageEnabled] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -64,16 +65,16 @@ export default function ChatInterface() {
     setInput("");
     setIsLoading(true);
 
+    const assistantMessage: Message = {
+      id: (Date.now() + 1).toString(),
+      role: "assistant",
+      content: "",
+      isStreaming: true,
+    };
+
+    setMessages((prev) => [...prev, assistantMessage]);
+
     try {
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "assistant",
-        content: "",
-        isStreaming: true,
-      };
-
-      setMessages((prev) => [...prev, assistantMessage]);
-
       const streamResponse = await fetch("http://localhost:8000/chat/stream", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -115,6 +116,10 @@ export default function ChatInterface() {
             : m
         )
       );
+
+      if (generateImageEnabled) {
+        await generateImage(fullContent);
+      }
     } catch (error) {
       setMessages((prev) => {
         const updated = prev.filter((m) => m.id !== assistantMessage.id);
@@ -128,6 +133,55 @@ export default function ChatInterface() {
           },
         ];
       });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const generateImage = async (prompt?: string) => {
+    const imagePrompt = prompt || input;
+    if (!imagePrompt.trim()) return;
+
+    setIsLoading(true);
+
+    const imageMessage: Message = {
+      id: (Date.now() + 1).toString(),
+      role: "assistant",
+      content: "Generating image...",
+      isStreaming: true,
+    };
+    setMessages((prev) => [...prev, imageMessage]);
+
+    try {
+      const response = await fetch("http://localhost:8000/image", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: imagePrompt }),
+      });
+
+      if (!response.ok) throw new Error("API error");
+
+      const data = await response.json();
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === imageMessage.id
+            ? {
+                ...m,
+                content: data.image_base64 ? "" : "Image generation failed. Please try again.",
+                imageBase64: data.image_base64 || undefined,
+                isStreaming: false,
+              }
+            : m
+        )
+      );
+    } catch (error) {
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === imageMessage.id
+            ? { ...m, content: "Image generation failed. Please try again.", isStreaming: false }
+            : m
+        )
+      );
     } finally {
       setIsLoading(false);
     }
@@ -204,10 +258,10 @@ export default function ChatInterface() {
                 )}
               </div>
 
-              {message.imageUrl && (
+              {message.imageBase64 && (
                 <div className="mt-3 rounded-lg overflow-hidden">
                   <img
-                    src={message.imageUrl}
+                    src={message.imageBase64}
                     alt="Generated"
                     className="max-w-full h-auto rounded-lg"
                   />
@@ -270,7 +324,17 @@ export default function ChatInterface() {
           </div>
 
           <div className="flex items-center justify-between mt-3 text-xs text-sand-400">
-            <span>Press Enter to send, Shift + Enter for new line</span>
+            <div className="flex items-center gap-4">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={generateImageEnabled}
+                  onChange={(e) => setGenerateImageEnabled(e.target.checked)}
+                  className="w-4 h-4 rounded border-sand-300 text-primary-600 focus:ring-primary-500"
+                />
+                <span>Generate Image</span>
+              </label>
+            </div>
             <span>Powered by FastAPI + Hugging Face</span>
           </div>
         </form>
