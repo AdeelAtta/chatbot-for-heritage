@@ -193,7 +193,7 @@ export default function ChatInterface() {
         {messages.length === 0 && (
           <div className="h-full flex flex-col items-center justify-center">
             <div className="text-center max-w-md">
-              <img src="/logo.png" alt="logo" className="w-24 h-24 mb-4 object-contain" />
+              <img src="/logo.png" alt="logo" className="mx-auto w-28 h-28 mb-4 object-contain" />
               <h2 className="text-2xl font-serif font-bold text-sand-800 mb-2">
                 Explore Mohenjo-daro
               </h2>
