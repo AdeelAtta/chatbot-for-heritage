@@ -3,7 +3,8 @@ from pathlib import Path
 from langchain_community.document_loaders import TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_chroma import Chroma
+import chromadb
+from chromadb.config import Settings
 
 DATA_DIR = Path("data")
 CHROMA_DIR = Path("chroma_db")
@@ -53,15 +54,27 @@ def create_vector_store(chunks):
         encode_kwargs={"normalize_embeddings": True},
     )
 
-    print("Storing in ChromaDB...")
-    vector_store = Chroma.from_documents(
-        documents=chunks,
-        embedding=embeddings,
-        persist_directory=str(CHROMA_DIR),
-        collection_name=COLLECTION_NAME,
-    )
-    print(f"Vector store created with {vector_store.count()} documents")
-    return vector_store
+    print("Generating embeddings and storing in ChromaDB...")
+    chroma_client = chromadb.PersistentClient(path=str(CHROMA_DIR))
+    collection = chroma_client.get_or_create_collection(name=COLLECTION_NAME)
+
+    for i, chunk in enumerate(chunks):
+        embedding = embeddings.embed_query(chunk.page_content)
+        metadata = {
+            "category": chunk.metadata.get("category", ""),
+            "source": chunk.metadata.get("source", ""),
+        }
+        collection.add(
+            ids=[f"chunk_{i}"],
+            embeddings=[embedding],
+            documents=[chunk.page_content],
+            metadatas=[metadata]
+        )
+        if (i + 1) % 20 == 0:
+            print(f"Processed {i + 1}/{len(chunks)} chunks...")
+
+    print(f"Vector store created with {collection.count()} documents")
+    return collection
 
 def main():
     print("=" * 50)
