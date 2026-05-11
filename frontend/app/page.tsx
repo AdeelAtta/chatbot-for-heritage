@@ -35,7 +35,7 @@ export default function Home() {
                 </svg>
               </button>
               <div className="flex items-center gap-3">
-                <span className="text-3xl">🏛️</span>
+                <img src="/logo.png" alt="logo" className="w-10 h-10 object-contain" />
                 <div>
                   <h1 className="text-xl font-serif font-bold text-sand-900">
                     Mohenjo-daro AI

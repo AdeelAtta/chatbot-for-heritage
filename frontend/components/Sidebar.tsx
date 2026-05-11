@@ -50,7 +50,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
           <div className="bg-gradient-to-br from-sand-100 to-sand-50 rounded-xl p-4 mb-6 border border-sand-200">
             <div className="flex items-start gap-3">
-              <span className="text-2xl">🏛️</span>
+              <img src="/logo.png" alt="logo" className="w-10 h-10 object-contain flex-shrink-0" />
               <div>
                 <h3 className="font-semibold text-sand-800 text-sm">Mohenjo-daro</h3>
                 <p className="text-xs text-sand-600 leading-relaxed mt-1">
