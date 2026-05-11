@@ -35,7 +35,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 CHROMA_DIR = "chroma_db"
 COLLECTION_NAME = "mohenjo_daro_kb"
-EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
+EMBEDDING_MODEL = "sentence-transformers/paraphrase-MiniLM-L3-v2"
 
 SYSTEM_PROMPT = """You are an expert historian specializing in the ancient Indus Valley Civilization, 
 with particular expertise in Mohenjo-daro. Your knowledge is based on archaeological evidence 
