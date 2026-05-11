@@ -75,7 +75,7 @@ export default function ChatInterface() {
     setMessages((prev) => [...prev, assistantMessage]);
 
     try {
-      const streamResponse = await fetch("https://chatbot-for-heritage.onrender.com/chat/stream", {
+      const streamResponse = await fetch("https://chatbot-for-heritage-1.onrender.com/chat/stream", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: userMessage.content }),
@@ -153,7 +153,7 @@ export default function ChatInterface() {
     setMessages((prev) => [...prev, imageMessage]);
 
     try {
-      const response = await fetch("https://chatbot-for-heritage.onrender.com/image", {
+      const response = await fetch("https://chatbot-for-heritage-1.onrender.com/image", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt: imagePrompt }),
