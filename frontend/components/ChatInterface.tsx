@@ -209,7 +209,7 @@ export default function ChatInterface() {
                   <button
                     key={q}
                     onClick={() => setInput(q)}
-                    className="text-left px-4 py-2.5 bg-white border border-sand-200 rounded-xl text-sm text-sand-700 hover:bg-sand-50 hover:border-sand-300 transition-all duration-200 shadow-sm"
+                    className="text-left px-4 py-2.5 glass-card rounded-xl text-sm text-sand-700 hover:bg-white/80 hover:border-sand-300/50 transition-all duration-200"
                   >
                     {q}
                   </button>
@@ -229,10 +229,10 @@ export default function ChatInterface() {
           >
             <div
               className={clsx(
-                "max-w-[80%] lg:max-w-[70%] rounded-2xl px-5 py-4 shadow-sm",
+                "max-w-[80%] lg:max-w-[70%] rounded-2xl px-5 py-4",
                 message.content.length > 0 && (message.role === "user"
-                  ? "bg-primary-600 text-white"
-                  : "bg-white border border-sand-200 text-sand-800")
+                  ? "bg-primary-600 text-white shadow-lg shadow-primary-600/20"
+                  : "glass-dark text-sand-800")
               )}
             >
               <div className="text-sm leading-relaxed">
@@ -281,7 +281,7 @@ export default function ChatInterface() {
 
         {messages.length > 0 && messages[messages.length - 1].role === "assistant" && messages[messages.length - 1].isStreaming && messages[messages.length - 1].content.length < 3 && (
           <div className="flex justify-start">
-            <div className="bg-white border border-sand-200 rounded-2xl px-5 py-4 shadow-sm">
+            <div className="glass-dark rounded-2xl px-5 py-4">
               <div className="flex items-center gap-3">
                 <div className="flex gap-1">
                   <span className="w-2 h-2 bg-sand-400 rounded-full animate-bounce [animation-delay:0ms]" />
@@ -297,7 +297,7 @@ export default function ChatInterface() {
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="border-t border-sand-200 bg-white/50 backdrop-blur-md p-4">
+      <div className="border-t border-sand-200/50 glass p-4">
         <form onSubmit={handleSubmit} className="max-w-4xl mx-auto">
           <div className="flex items-end gap-3">
             <div className="flex-1 relative">
@@ -312,7 +312,7 @@ export default function ChatInterface() {
                   }
                 }}
                 placeholder="Ask about Mohenjo-daro..."
-                className="w-full resize-none rounded-xl border border-sand-300 bg-white px-4 py-3 text-sand-800 placeholder-sand-400 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all duration-200"
+                className="w-full resize-none rounded-xl border border-sand-200/50 glass-dark px-4 py-3 text-sand-800 placeholder-sand-400/60 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500/50 transition-all duration-200"
                 rows={1}
                 disabled={isLoading}
               />

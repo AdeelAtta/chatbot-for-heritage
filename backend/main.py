@@ -101,6 +101,11 @@ async def startup_event():
         print(f"Collection loaded: {count} documents")
     except Exception as e:
         print(f"Warning: Could not load collection: {e}")
+    
+    print("Loading embedding model...")
+    emb = get_embeddings()
+    _ = emb.embed_query("test")
+    print("Embedding model ready")
     gc.collect()
     current, peak = tracemalloc.get_traced_memory()
     print(f"Memory after startup: {current / 1024 / 1024:.1f} MB")

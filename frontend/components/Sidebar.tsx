@@ -28,7 +28,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       />
 
       <aside
-        className={`fixed md:left-0 top-0 h-full w-80 bg-white border-r border-sand-200 z-50 transform transition-transform duration-300 ease-out ${
+        className={`fixed md:left-0 top-0 h-full w-80 glass border-r border-sand-200/50 z-50 transform transition-transform duration-300 ease-out ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         } md:translate-x-0 overflow-y-auto`}
       >
@@ -48,7 +48,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             </button>
           </div>
 
-          <div className="bg-gradient-to-br from-sand-100 to-sand-50 rounded-xl p-4 mb-6 border border-sand-200">
+          <div className="glass-card rounded-xl p-4 mb-6">
             <div className="flex items-start gap-3">
               <img src="/logo.png" alt="logo" className="w-10 h-10 object-contain flex-shrink-0" />
               <div>

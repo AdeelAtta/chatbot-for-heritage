@@ -8,7 +8,7 @@ interface MobileNavProps {
 
 export default function MobileNav({ onMenuClick }: MobileNavProps) {
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-sand-200 z-40">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 glass border-t border-sand-200/50 z-40">
       <div className="flex items-center justify-around py-3">
         <button className="flex flex-col items-center gap-1 text-primary-600">
           <Home className="w-5 h-5" />
