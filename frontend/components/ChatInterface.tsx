@@ -53,6 +53,8 @@ export default function ChatInterface() {
       .replace(/\n\*/g, '\n\n*');
   };
 
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
@@ -77,7 +79,7 @@ export default function ChatInterface() {
     setMessages((prev) => [...prev, assistantMessage]);
 
     try {
-      const streamResponse = await fetch("http://localhost:8000/chat/stream", {
+      const streamResponse = await fetch(`${API_URL}/chat/stream`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: userMessage.content }),
@@ -156,7 +158,7 @@ export default function ChatInterface() {
     setMessages((prev) => [...prev, imageMessage]);
 
     try {
-      const response = await fetch("http://localhost:8000/image", {
+      const response = await fetch(`${API_URL}/image`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt: imagePrompt }),
