@@ -42,6 +42,8 @@ export default function ChatInterface() {
     "Tell me about the Great Bath",
     "How did people live in Mohenjo-daro?",
     "What caused the decline of the civilization?",
+    "What artifacts were found at the site?",
+    "What happened after its abandonment?",
   ];
 
   const cleanMarkdown = (text: string) => {
@@ -147,7 +149,8 @@ export default function ChatInterface() {
     const imageMessage: Message = {
       id: (Date.now() + 1).toString(),
       role: "assistant",
-      content: "Generating image...",
+      content: "",
+      imageBase64: "loading",
       isStreaming: true,
     };
     setMessages((prev) => [...prev, imageMessage]);
@@ -178,7 +181,7 @@ export default function ChatInterface() {
       setMessages((prev) =>
         prev.map((m) =>
           m.id === imageMessage.id
-            ? { ...m, content: "Image generation failed. Please try again.", isStreaming: false }
+            ? { ...m, content: "Image generation failed. Please try again.", imageBase64: undefined, isStreaming: false }
             : m
         )
       );
@@ -192,8 +195,8 @@ export default function ChatInterface() {
       <div className="flex-1 overflow-y-auto chat-scrollbar p-6 space-y-6">
         {messages.length === 0 && (
           <div className="h-full flex flex-col items-center justify-center">
-            <div className="text-center max-w-md">
-              <img src="/logo.png" alt="logo" className="mx-auto w-28 h-28 mb-4 object-contain" />
+            <div className="text-center tw-max-w-lg">
+              <img src="/logo.png" alt="logo" className="mx-auto w-28 h-28 object-contain" />
               <h2 className="text-2xl font-serif font-bold text-sand-800 mb-2">
                 Explore Mohenjo-daro
               </h2>
@@ -201,7 +204,7 @@ export default function ChatInterface() {
                 Ask me anything about the ancient Indus Valley Civilization. I can also
                 generate images to help visualize this fascinating civilization.
               </p>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-3 gap-2">
                 {suggestedQuestions.map((q) => (
                   <button
                     key={q}
@@ -258,7 +261,12 @@ export default function ChatInterface() {
                 )}
               </div>
 
-              {message.imageBase64 && (
+              {message.imageBase64 === "loading" ? (
+                <div className="flex items-center gap-2">
+                  <Loader2 className="w-5 h-5 animate-spin text-primary-600" />
+                  <span className="text-sand-500">Generating image...</span>
+                </div>
+              ) : message.imageBase64 && (
                 <div className="mt-3 rounded-lg overflow-hidden">
                   <img
                     src={message.imageBase64}

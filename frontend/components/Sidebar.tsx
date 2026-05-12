@@ -67,7 +67,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
               {topics.map((topic) => (
                 <button
                   key={topic.name}
-                  className="w-full text-left px-3 py-2.5 rounded-lg text-sm text-sand-600 hover:bg-sand-50 hover:text-sand-800 transition-all duration-200 flex items-center gap-2"
+                  className="w-full cursor-default text-left px-3 py-2.5 rounded-lg text-sm text-sand-600 hover:bg-sand-50 hover:text-sand-800 transition-all duration-200 flex items-center gap-2"
                 >
                   <span>{topic.icon}</span>
                   <span>{topic.name}</span>
