@@ -57,7 +57,7 @@ def init_llm_client():
     """Initialize Hugging Face LLM client."""
     hf_token = os.environ.get("HF_TOKEN", "") or st.secrets.get("HF_TOKEN", "")
     client = InferenceClient(
-        provider="auto",
+        provider="hf-inference",
         token=hf_token
     )
     return client
@@ -71,7 +71,7 @@ def test_api_connection():
         
         test_messages = [{"role": "user", "content": "Say 'Hello' if you can hear me."}]
         response = client.chat.completions.create(
-            model="deepseek-ai/DeepSeek-V3-0324",
+            model="mistralai/Mistral-7B-Instruct-v0.3",
             messages=test_messages,
             max_tokens=10,
         )
@@ -128,7 +128,7 @@ def generate_response(query: str, context: str) -> str:
     
     try:
         response = client.chat.completions.create(
-            model="deepseek-ai/DeepSeek-V3-0324",
+            model="mistralai/Mistral-7B-Instruct-v0.3",
             messages=messages,
             max_tokens=512,
             temperature=0.7,
@@ -181,6 +181,7 @@ def generate_image(image_prompt: str):
         image = client.text_to_image(
             prompt=enhanced_prompt,
             model="stabilityai/stable-diffusion-xl-base-1.0",
+            provider="hf-inference",
             negative_prompt="modern, buildings, people, text, watermark",
         )
         return image

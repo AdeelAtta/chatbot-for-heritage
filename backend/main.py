@@ -82,7 +82,7 @@ hf_token = os.environ.get("HF_TOKEN", "")
 def get_llm_client():
     if not hf_token:
         print("WARNING: HF_TOKEN not set")
-    return InferenceClient(provider="auto", token=hf_token)
+    return InferenceClient(provider="hf-inference", token=hf_token)
 
 @app.on_event("startup")
 async def startup_event():
@@ -167,7 +167,7 @@ async def chat_stream(request: ChatRequest):
         try:
             llm_client = get_llm_client()
             response = llm_client.chat.completions.create(
-                model="deepseek-ai/DeepSeek-V3-0324",
+                model="mistralai/Mistral-7B-Instruct-v0.3",
                 messages=messages,
                 max_tokens=512,
                 temperature=0.7,
@@ -216,7 +216,7 @@ async def generate_image_endpoint(request: ImageRequest):
         ]
 
         prompt_response = llm_client.chat.completions.create(
-            model="deepseek-ai/DeepSeek-V3-0324",
+            model="mistralai/Mistral-7B-Instruct-v0.3",
             messages=prompt_messages,
             max_tokens=100,
         )
@@ -227,6 +227,7 @@ async def generate_image_endpoint(request: ImageRequest):
         image = llm_client.text_to_image(
             prompt=final_prompt[:200],
             model="stabilityai/stable-diffusion-xl-base-1.0",
+            provider="hf-inference",
             negative_prompt="modern buildings, people, text, watermark, blurry, low quality, cartoon, abstract, modern clothing, anachronistic elements",
         )
 
