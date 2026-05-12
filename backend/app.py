@@ -180,7 +180,7 @@ def generate_image(image_prompt: str):
     try:
         image = client.text_to_image(
             prompt=enhanced_prompt,
-            model="stabilityai/stable-diffusion-3-medium",
+            model="stabilityai/stable-diffusion-xl-base-1.0",
             negative_prompt="modern, buildings, people, text, watermark",
         )
         return image

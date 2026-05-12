@@ -224,11 +224,11 @@ async def generate_image_endpoint(request: ImageRequest):
         final_prompt = f"{prompt}, Mohenjo-daro, ancient Indus Valley Civilization, archaeological reconstruction, detailed, photorealistic, warm lighting"
         print(f"Image prompt: {final_prompt}")
 
-image = llm_client.text_to_image(
-            prompt=final_prompt[:200],
-            model="stabilityai/stable-diffusion-3-medium",
-            negative_prompt="modern buildings, people, text, watermark, blurry, low quality, cartoon, abstract, modern clothing, anachronistic elements",
-        )
+        image = llm_client.text_to_image(
+                    prompt=final_prompt[:200],
+                    model="stabilityai/stable-diffusion-xl-base-1.0",
+                    negative_prompt="modern buildings, people, text, watermark, blurry, low quality, cartoon, abstract, modern clothing, anachronistic elements",
+                )
 
         import base64
         from io import BytesIO
