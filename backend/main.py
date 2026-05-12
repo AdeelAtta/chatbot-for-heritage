@@ -82,7 +82,7 @@ hf_token = os.environ.get("HF_TOKEN", "")
 def get_llm_client():
     if not hf_token:
         print("WARNING: HF_TOKEN not set")
-    return InferenceClient(provider="hf-inference", token=hf_token)
+    return InferenceClient(provider="auto", token=hf_token)
 
 @app.on_event("startup")
 async def startup_event():
@@ -224,10 +224,9 @@ async def generate_image_endpoint(request: ImageRequest):
         final_prompt = f"{prompt}, Mohenjo-daro, ancient Indus Valley Civilization, archaeological reconstruction, detailed, photorealistic, warm lighting"
         print(f"Image prompt: {final_prompt}")
 
-        image = llm_client.text_to_image(
+image = llm_client.text_to_image(
             prompt=final_prompt[:200],
-            model="stabilityai/stable-diffusion-xl-base-1.0",
-            provider="hf-inference",
+            model="stabilityai/stable-diffusion-3-medium",
             negative_prompt="modern buildings, people, text, watermark, blurry, low quality, cartoon, abstract, modern clothing, anachronistic elements",
         )
 

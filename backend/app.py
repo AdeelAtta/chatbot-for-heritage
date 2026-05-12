@@ -57,7 +57,7 @@ def init_llm_client():
     """Initialize Hugging Face LLM client."""
     hf_token = os.environ.get("HF_TOKEN", "") or st.secrets.get("HF_TOKEN", "")
     client = InferenceClient(
-        provider="hf-inference",
+        provider="auto",
         token=hf_token
     )
     return client
@@ -180,8 +180,7 @@ def generate_image(image_prompt: str):
     try:
         image = client.text_to_image(
             prompt=enhanced_prompt,
-            model="stabilityai/stable-diffusion-xl-base-1.0",
-            provider="hf-inference",
+            model="stabilityai/stable-diffusion-3-medium",
             negative_prompt="modern, buildings, people, text, watermark",
         )
         return image
