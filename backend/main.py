@@ -206,22 +206,23 @@ async def generate_image_endpoint(request: ImageRequest):
     try:
         llm_client = get_llm_client()
         prompt_messages = [
-            {"role": "system", "content": "Create a detailed prompt for generating a historically accurate image of Mohenjo-daro. Keep it under 150 characters, focusing on key visual elements."},
-            {"role": "user", "content": f"Create an image prompt based on:\n{request.prompt[:300]}"}
+            {"role": "system", "content": "You create detailed image prompts for historical visualization of Mohenjo-daro. Based on the user's question, create a specific visual scene that directly answers what they asked about. Focus on accurate archaeological details. Keep the prompt under 120 characters."},
+            {"role": "user", "content": f"Create an image prompt for: {request.prompt[:400]}"}
         ]
 
         prompt_response = llm_client.chat.completions.create(
             model="deepseek-ai/DeepSeek-V3-0324",
             messages=prompt_messages,
-            max_tokens=80,
+            max_tokens=100,
         )
         prompt = prompt_response.choices[0].message.content.strip()
-        prompt = f"Ancient Mohenjo-daro ruins, archaeological site, {prompt}, historical accuracy, detailed, realistic, warm lighting"
+        final_prompt = f"{prompt}, Mohenjo-daro, ancient Indus Valley Civilization, archaeological reconstruction, detailed, photorealistic, warm lighting"
+        print(f"Image prompt: {final_prompt}")
 
         image = llm_client.text_to_image(
-            prompt=prompt[:300],
+            prompt=final_prompt[:200],
             model="stabilityai/stable-diffusion-xl-base-1.0",
-            negative_prompt="modern, buildings, people, text, watermark, blurry",
+            negative_prompt="modern buildings, people, text, watermark, blurry, low quality, cartoon, abstract, modern clothing, anachronistic elements",
         )
 
         import base64
