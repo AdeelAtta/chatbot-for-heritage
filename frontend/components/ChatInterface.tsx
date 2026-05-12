@@ -75,7 +75,7 @@ export default function ChatInterface() {
     setMessages((prev) => [...prev, assistantMessage]);
 
     try {
-      const streamResponse = await fetch("https://chatbot-for-heritage-1.onrender.com/chat/stream", {
+      const streamResponse = await fetch("http://localhost:8000/chat/stream", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: userMessage.content }),
@@ -153,7 +153,7 @@ export default function ChatInterface() {
     setMessages((prev) => [...prev, imageMessage]);
 
     try {
-      const response = await fetch("https://chatbot-for-heritage-1.onrender.com/image", {
+      const response = await fetch("http://localhost:8000/image", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt: imagePrompt }),
@@ -227,9 +227,9 @@ export default function ChatInterface() {
             <div
               className={clsx(
                 "max-w-[80%] lg:max-w-[70%] rounded-2xl px-5 py-4 shadow-sm",
-                message.role === "user"
+                message.content.length > 0 && (message.role === "user"
                   ? "bg-primary-600 text-white"
-                  : "bg-white border border-sand-200 text-sand-800"
+                  : "bg-white border border-sand-200 text-sand-800")
               )}
             >
               <div className="text-sm leading-relaxed">
@@ -271,7 +271,7 @@ export default function ChatInterface() {
           </div>
         ))}
 
-        {/* {isLoading && (
+        {messages.length > 0 && messages[messages.length - 1].role === "assistant" && messages[messages.length - 1].isStreaming && messages[messages.length - 1].content.length < 3 && (
           <div className="flex justify-start">
             <div className="bg-white border border-sand-200 rounded-2xl px-5 py-4 shadow-sm">
               <div className="flex items-center gap-3">
@@ -284,7 +284,7 @@ export default function ChatInterface() {
               </div>
             </div>
           </div>
-        )} */}
+        )}
 
         <div ref={messagesEndRef} />
       </div>

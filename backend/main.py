@@ -17,6 +17,8 @@ from chromadb.config import Settings
 from langchain_huggingface import HuggingFaceEmbeddings
 from huggingface_hub import InferenceClient
 from dotenv import load_dotenv
+import tracemalloc
+import gc
 
 load_dotenv()
 
@@ -24,7 +26,7 @@ app = FastAPI(title="Mohenjo-daro API", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://chatbot-for-heritage.vercel.app"],
+    allow_origins=["https://chatbot-for-heritage.vercel.app","http://localhost:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -84,7 +86,13 @@ def get_llm_client():
 
 @app.on_event("startup")
 async def startup_event():
+    tracemalloc.start()
+    gc.collect()
+    current, peak = tracemalloc.get_traced_memory()
+    print("=" * 50)
     print("Starting Mohenjo-daro API...")
+    print(f"Memory (current): {current / 1024 / 1024:.1f} MB")
+    print(f"Memory (peak): {peak / 1024 / 1024:.1f} MB")
     print(f"ChromaDB path: {CHROMA_DIR}")
     print(f"Embedding model: {EMBEDDING_MODEL}")
     try:
@@ -93,7 +101,12 @@ async def startup_event():
         print(f"Collection loaded: {count} documents")
     except Exception as e:
         print(f"Warning: Could not load collection: {e}")
+    gc.collect()
+    current, peak = tracemalloc.get_traced_memory()
+    print(f"Memory after startup: {current / 1024 / 1024:.1f} MB")
+    print(f"Peak memory so far: {peak / 1024 / 1024:.1f} MB")
     print("Startup complete")
+    print("=" * 50)
 
 
 class ChatRequest(BaseModel):
@@ -113,17 +126,25 @@ async def root():
 @app.post("/chat/stream")
 async def chat_stream(request: ChatRequest):
     query = request.message
-
+    gc.collect()
+    current, peak = tracemalloc.get_traced_memory()
+    print(f"[Request] Memory before embedding: {current / 1024 / 1024:.1f} MB")
     query_embedding = get_embeddings().embed_query(query)
+    gc.collect()
+    current, peak = tracemalloc.get_traced_memory()
+    print(f"[Request] Memory after embedding: {current / 1024 / 1024:.1f} MB")
     results = get_collection().query(
         query_embeddings=[query_embedding],
         n_results=3
     )
 
     contexts = []
-    for i, doc in enumerate(results["documents"][0]):
-        metadata = results["metadatas"][0][i]
-        contexts.append(f"[{metadata.get('category', 'unknown')}]: {doc}")
+    if results["documents"] and results["documents"][0]:
+        for i, doc in enumerate(results["documents"][0]):
+            metadata = results["metadatas"][0][i] if results["metadatas"] and results["metadatas"][0] else {}
+            if doc:
+                category = (metadata.get("category") or "unknown") if metadata else "unknown"
+                contexts.append(f"[{category}]: {doc}")
 
     context = "\n\n".join(contexts)
 
@@ -159,6 +180,9 @@ async def chat_stream(request: ChatRequest):
         except Exception as e:
             yield f"data: Error: {str(e)}\n\n"
 
+    gc.collect()
+    current, peak = tracemalloc.get_traced_memory()
+    print(f"[Request] Memory after LLM: {current / 1024 / 1024:.1f} MB, Peak: {peak / 1024 / 1024:.1f} MB")
     return StreamingResponse(
         stream_response(),
         media_type="text/event-stream",
