@@ -4,10 +4,10 @@
 graph TB
     subgraph "Client Components"
         direction TB
-        page[app/page.tsx<br/>Main Page]
-        chat[components/ChatInterface.tsx<br/>Chat Interface]
-        sidebar[components/Sidebar.tsx<br/>Navigation Sidebar]
-        mobile[components/MobileNav.tsx<br/>Mobile Navigation]
+        page["app/page.tsx (Main Page)"]
+        chat["components/ChatInterface.tsx (Chat Interface)"]
+        sidebar["components/Sidebar.tsx (Navigation Sidebar)"]
+        mobile["components/MobileNav.tsx (Mobile Navigation)"]
     end
 
     subgraph "Frontend State"
@@ -21,7 +21,7 @@ graph TB
     subgraph "API Client"
         direction TB
         fetch[fetch API]
-        stream[ReadableStream<br/>SSE Handler]
+        stream[ReadableStream (SSE Handler)]
         decoder[TextDecoder]
     end
 
@@ -31,13 +31,13 @@ graph TB
         chat_endpoint[/chat/stream]
         image_endpoint[/image]
         root_endpoint[/]
-        
+
         subgraph "Request Handlers"
             parse[Request Parser]
             validate[Input Validation]
             error[Error Handler]
         end
-        
+
         subgraph "Services"
             embed_service[Embedding Service]
             search_service[Vector Search Service]
@@ -48,7 +48,7 @@ graph TB
 
     subgraph "AI/ML Services"
         direction TB
-        emb_model[Sentence Transformers<br/>paraphrase-MiniLM-L3-v2]
+        emb_model[Sentence Transformers (paraphrase-MiniLM-L3-v2)]
         llm_client[InferenceClient]
         image_client[Image Generation Client]
     end
@@ -56,7 +56,7 @@ graph TB
     subgraph "Data Store"
         direction TB
         chroma[ChromaDB Client]
-        collection[Collection<br/>mohenjo_daro_kb]
+        collection[Collection (mohenjo_daro_kb)]
         docs[Documents]
         metadata[Metadata]
     end

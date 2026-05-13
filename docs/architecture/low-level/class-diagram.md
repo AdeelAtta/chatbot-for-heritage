@@ -16,7 +16,7 @@ classDiagram
         +string id
         +Role role
         +string content
-        +string? imageBase64
+        +string imageBase64
         +boolean isStreaming
     }
 
@@ -56,7 +56,7 @@ classDiagram
     FastAPI --> LLMClient
     LLMClient --> SYSTEM_PROMPT
 
-    note for Message "role: user | assistant"
+    note for Message "role: user or assistant"
     note for ChatInterface "Uses React hooks: useState, useRef, useEffect"
     note for FastAPI "Port: 8000, CORS enabled"
 ```
