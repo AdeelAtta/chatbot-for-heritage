@@ -39,10 +39,12 @@ CHROMA_DIR = "chroma_db"
 COLLECTION_NAME = "mohenjo_daro_kb"
 EMBEDDING_MODEL = "sentence-transformers/paraphrase-MiniLM-L3-v2"
 
-SYSTEM_PROMPT = """You are an expert historian specializing in the ancient Indus Valley Civilization, 
-with particular expertise in Mohenjo-daro. Your knowledge is based on archaeological evidence 
-and scholarly research. Answer questions accurately and provide historical context. 
-If you don't know something, say so rather than making up information."""
+SYSTEM_PROMPT = """You are an expert historian specializing in the ancient Indus Valley Civilization,
+with particular expertise in Mohenjo-daro. Your knowledge is based on archaeological evidence
+and scholarly research. Answer questions accurately and provide historical context.
+If you don't know something, say so rather than making up information.
+
+IMPORTANT: Keep your responses concise - maximum 1-5 lines. Be direct and to the point."""
 
 IMAGE_KEYWORDS = [
     "show", "look like", "what did", "imagine", "draw", "picture",
