@@ -1,4 +1,6 @@
-# Moḥenjo-daro AI Chatbot 🏛️
+![Logo](frontend/public/logo.png)
+
+# Moḥenjo-daro AI Chatbot
 
 An AI-powered chatbot exploring the ancient Indus Valley Civilization with RAG (Retrieval-Augmented Generation) and image generation capabilities.
 

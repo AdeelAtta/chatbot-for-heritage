@@ -42,6 +42,8 @@ export default function ChatInterface() {
     "Tell me about the Great Bath",
     "How did people live in Mohenjo-daro?",
     "What caused the decline of the civilization?",
+    "What artifacts were found at the site?",
+    "What happened after its abandonment?",
   ];
 
   const cleanMarkdown = (text: string) => {
@@ -50,6 +52,8 @@ export default function ChatInterface() {
       .replace(/\n(\d+\.)/g, '\n\n$1')
       .replace(/\n\*/g, '\n\n*');
   };
+
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,7 +79,7 @@ export default function ChatInterface() {
     setMessages((prev) => [...prev, assistantMessage]);
 
     try {
-      const streamResponse = await fetch("http://localhost:8000/chat/stream", {
+      const streamResponse = await fetch(`${API_URL}/chat/stream`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: userMessage.content }),
@@ -147,13 +151,14 @@ export default function ChatInterface() {
     const imageMessage: Message = {
       id: (Date.now() + 1).toString(),
       role: "assistant",
-      content: "Generating image...",
+      content: "",
+      imageBase64: "loading",
       isStreaming: true,
     };
     setMessages((prev) => [...prev, imageMessage]);
 
     try {
-      const response = await fetch("http://localhost:8000/image", {
+      const response = await fetch(`${API_URL}/image`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt: imagePrompt }),
@@ -178,7 +183,7 @@ export default function ChatInterface() {
       setMessages((prev) =>
         prev.map((m) =>
           m.id === imageMessage.id
-            ? { ...m, content: "Image generation failed. Please try again.", isStreaming: false }
+            ? { ...m, content: "Image generation failed. Please try again.", imageBase64: undefined, isStreaming: false }
             : m
         )
       );
@@ -192,8 +197,8 @@ export default function ChatInterface() {
       <div className="flex-1 overflow-y-auto chat-scrollbar p-6 space-y-6">
         {messages.length === 0 && (
           <div className="h-full flex flex-col items-center justify-center">
-            <div className="text-center max-w-md">
-              <div className="text-6xl mb-4">🏛️</div>
+            <div className="text-center tw-max-w-lg">
+              <img src="/logo.png" alt="logo" className="mx-auto w-28 h-28 object-contain" />
               <h2 className="text-2xl font-serif font-bold text-sand-800 mb-2">
                 Explore Mohenjo-daro
               </h2>
@@ -201,12 +206,12 @@ export default function ChatInterface() {
                 Ask me anything about the ancient Indus Valley Civilization. I can also
                 generate images to help visualize this fascinating civilization.
               </p>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-3 gap-2">
                 {suggestedQuestions.map((q) => (
                   <button
                     key={q}
                     onClick={() => setInput(q)}
-                    className="text-left px-4 py-2.5 bg-white border border-sand-200 rounded-xl text-sm text-sand-700 hover:bg-sand-50 hover:border-sand-300 transition-all duration-200 shadow-sm"
+                    className="text-left px-4 py-2.5 glass-card rounded-xl text-sm text-sand-700 hover:bg-white/80 hover:border-sand-300/50 transition-all duration-200"
                   >
                     {q}
                   </button>
@@ -226,10 +231,10 @@ export default function ChatInterface() {
           >
             <div
               className={clsx(
-                "max-w-[80%] lg:max-w-[70%] rounded-2xl px-5 py-4 shadow-sm",
-                message.role === "user"
-                  ? "bg-primary-600 text-white"
-                  : "bg-white border border-sand-200 text-sand-800"
+                "max-w-[80%] lg:max-w-[70%] rounded-2xl px-5 py-4",
+                message.content.length > 0 && (message.role === "user"
+                  ? "bg-primary-600 text-white shadow-lg shadow-primary-600/20"
+                  : "glass-dark text-sand-800")
               )}
             >
               <div className="text-sm leading-relaxed">
@@ -258,7 +263,12 @@ export default function ChatInterface() {
                 )}
               </div>
 
-              {message.imageBase64 && (
+              {message.imageBase64 === "loading" ? (
+                <div className="flex items-center gap-2">
+                  <Loader2 className="w-5 h-5 animate-spin text-primary-600" />
+                  <span className="text-sand-500">Generating image...</span>
+                </div>
+              ) : message.imageBase64 && (
                 <div className="mt-3 rounded-lg overflow-hidden">
                   <img
                     src={message.imageBase64}
@@ -271,9 +281,9 @@ export default function ChatInterface() {
           </div>
         ))}
 
-        {/* {isLoading && (
+        {messages.length > 0 && messages[messages.length - 1].role === "assistant" && messages[messages.length - 1].isStreaming && messages[messages.length - 1].content.length < 3 && (
           <div className="flex justify-start">
-            <div className="bg-white border border-sand-200 rounded-2xl px-5 py-4 shadow-sm">
+            <div className="glass-dark rounded-2xl px-5 py-4">
               <div className="flex items-center gap-3">
                 <div className="flex gap-1">
                   <span className="w-2 h-2 bg-sand-400 rounded-full animate-bounce [animation-delay:0ms]" />
@@ -284,12 +294,12 @@ export default function ChatInterface() {
               </div>
             </div>
           </div>
-        )} */}
+        )}
 
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="border-t border-sand-200 bg-white/50 backdrop-blur-md p-4">
+      <div className="border-t border-sand-200/50 glass p-4">
         <form onSubmit={handleSubmit} className="max-w-4xl mx-auto">
           <div className="flex items-end gap-3">
             <div className="flex-1 relative">
@@ -304,7 +314,7 @@ export default function ChatInterface() {
                   }
                 }}
                 placeholder="Ask about Mohenjo-daro..."
-                className="w-full resize-none rounded-xl border border-sand-300 bg-white px-4 py-3 text-sand-800 placeholder-sand-400 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all duration-200"
+                className="w-full resize-none rounded-xl border border-sand-200/50 glass-dark px-4 py-3 text-sand-800 placeholder-sand-400/60 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500/50 transition-all duration-200"
                 rows={1}
                 disabled={isLoading}
               />

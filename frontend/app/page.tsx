@@ -9,11 +9,11 @@ export default function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <main className="flex h-screen bg-sand-50 overflow-hidden">
+    <main className="flex h-screen overflow-hidden">
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       <div className="flex-1 flex flex-col w-full md:ml-80 transition-all duration-300">
-        <header className="bg-white/80 backdrop-blur-md border-b border-sand-200 px-6 py-4">
+        <header className="glass border-b border-sand-200/50 px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <button
@@ -35,7 +35,7 @@ export default function Home() {
                 </svg>
               </button>
               <div className="flex items-center gap-3">
-                <span className="text-3xl">🏛️</span>
+                <img src="/logo.png" alt="logo" className="w-10 h-10 object-contain" />
                 <div>
                   <h1 className="text-xl font-serif font-bold text-sand-900">
                     Mohenjo-daro AI

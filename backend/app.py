@@ -71,7 +71,7 @@ def test_api_connection():
         
         test_messages = [{"role": "user", "content": "Say 'Hello' if you can hear me."}]
         response = client.chat.completions.create(
-            model="deepseek-ai/DeepSeek-V3-0324",
+            model="mistralai/Mistral-7B-Instruct-v0.3",
             messages=test_messages,
             max_tokens=10,
         )
@@ -128,7 +128,7 @@ def generate_response(query: str, context: str) -> str:
     
     try:
         response = client.chat.completions.create(
-            model="deepseek-ai/DeepSeek-V3-0324",
+            model="mistralai/Mistral-7B-Instruct-v0.3",
             messages=messages,
             max_tokens=512,
             temperature=0.7,

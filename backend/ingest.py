@@ -12,7 +12,7 @@ COLLECTION_NAME = "mohenjo_daro_kb"
 
 CHUNK_SIZE = 500
 CHUNK_OVERLAP = 50
-EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
+EMBEDDING_MODEL = "sentence-transformers/paraphrase-MiniLM-L3-v2"
 
 def load_documents():
     documents = []
