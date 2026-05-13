@@ -12,7 +12,7 @@ flowchart TD
     end
 
     subgraph Backend["Backend (FastAPI)"]
-        API[API Endpoint (/chat/stream)]
+        API[API Endpoint<br/>/chat/stream]
         Embed[Embedding Generator]
         Search[Vector Search]
         Context[Context Builder]
